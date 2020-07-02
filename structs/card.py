@@ -38,6 +38,12 @@ class CardCollection(object):
 class Deck(CardCollection):
     seed: int = None
 
+    def shuffle(self, seed: int = None):
+        rng = random.Random()
+        self.seed = seed if seed is not None else rng.randint(0, 100000000)
+        rng.seed(self.seed)
+        rng.shuffle(self.cards)
+
     def __repr__(self):
         return repr(self.cards)
 
