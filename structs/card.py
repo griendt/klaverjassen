@@ -32,6 +32,8 @@ class CardCollection(object):
     def __init__(self, cards: List[Card]):
         self.cards = cards
 
+    def __eq__(self, other):
+        return set(self.cards) == set(other.cards)
 
 class Deck(CardCollection):
     seed: int = None
@@ -49,8 +51,8 @@ class Deck(CardCollection):
         else:
             self.cards = cards
 
-    def shuffle(self, seed: int = None):
-        rng = random.Random()
-        self.seed = seed if seed is not None else rng.randint(0, 100000000)
-        rng.seed(self.seed)
-        rng.shuffle(self.cards)
+    def __eq__(self, other):
+        # In case different seeds result in the same card order,
+        # we should of course consider the decks equal anyway.
+        return self.cards == other.cards
+
