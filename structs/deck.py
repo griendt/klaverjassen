@@ -1,7 +1,8 @@
 import random
 from typing import List
 
-from structs.card import CardCollection, Suit, Rank, Card
+from structs.card import Suit, Rank, Card
+from structs.cardCollection import CardCollection
 from structs.player import Player
 
 
@@ -45,6 +46,14 @@ class Deck(CardCollection):
         """
         if len(self.cards) % len(players) != 0:
             raise ValueError(f"Cannot evenly deal {len(self.cards)} cards among {len(players)} players")
+
+        hand_size = int(len(self.cards)/len(players))
+
+        for player in players:
+            player.hand += self.cards[0:hand_size]
+
+            print(player.hand)
+            self.cards = self.cards[hand_size:]
 
     def __repr__(self):
         return repr(self.cards)
