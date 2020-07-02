@@ -1,8 +1,11 @@
 import unittest
 import random
 
-from structs.card import Deck, CardCollection, Card, Suit, Rank
+from structs.card import CardCollection, Card
+from structs.deck import Deck
 from structs.player import Player
+from structs.rank import Rank
+from structs.suit import Suit
 
 
 class DeckTestCase(unittest.TestCase):
