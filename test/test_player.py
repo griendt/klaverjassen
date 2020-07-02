@@ -20,6 +20,9 @@ class PlayerTestCase(unittest.TestCase):
             self.assertGreater(len(player.name), 3)
             self.assertLess(len(player.name), 12)
 
+    def test_player_creation_without_hand_specified(self):
+        player = Player(name="Foo")
+        self.assertEqual(player.hand, CardCollection([]))
 
 if __name__ == '__main__':
     unittest.main()
