@@ -7,8 +7,8 @@ class Player(object):
     hand: CardCollection
     name: str
 
-    def __init__(self, hand: CardCollection, name: str = None):
-        self.hand = hand
+    def __init__(self, hand: CardCollection = None, name: str = None):
+        self.hand = hand if hand is not None else CardCollection([])
         self.name = name if name is not None else self.generate_name()
 
     @staticmethod
