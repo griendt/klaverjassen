@@ -2,6 +2,7 @@ import unittest
 import random
 
 from structs.card import Deck, CardCollection, Card, Suit, Rank
+from structs.player import Player
 
 
 class DeckTestCase(unittest.TestCase):
@@ -90,6 +91,18 @@ class DeckTestCase(unittest.TestCase):
         ]))
 
         self.assertEqual(deck_1, deck_2)
+
+    def test_a_deck_can_be_dealt(self):
+        deck = Deck()
+        players = [Player(), Player(), Player(), Player()]
+        deck.deal(players)
+
+        # The deck is fully depleted
+        self.assertEqual(len(deck.cards), 0)
+        for player in players:
+            # Each player has the required amount of cards
+            self.assertEqual(len(player.hand), 8)
+
 
 if __name__ == '__main__':
     unittest.main()
