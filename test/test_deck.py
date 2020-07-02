@@ -95,6 +95,17 @@ class DeckTestCase(unittest.TestCase):
 
         self.assertEqual(deck_1, deck_2)
 
+    def test_a_deck_cannot_be_dealt_if_not_evenly(self):
+        deck = Deck()
+        players = [Player(), Player(), Player()]
+
+        # What we are testing is the scenario where the deck's cards cannot
+        # be dealt evenly among the players, so we must assert it.
+        self.assertNotEqual(len(deck.cards) % len(players), 0)
+
+        # In this scenario, the method should throw a ValueError.
+        self.assertRaises(ValueError, deck.deal, players)
+
     def test_a_deck_can_be_dealt(self):
         deck = Deck()
         players = [Player(), Player(), Player(), Player()]
