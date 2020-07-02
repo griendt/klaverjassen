@@ -1,6 +1,6 @@
 import random
 
-from structs.card import CardCollection
+from structs.cardCollection import CardCollection
 
 
 class Player(object):

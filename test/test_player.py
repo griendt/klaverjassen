@@ -1,6 +1,6 @@
 import unittest
 
-from structs.card import CardCollection
+from structs.cardCollection import CardCollection
 from structs.player import Player
 
 

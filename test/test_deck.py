@@ -1,7 +1,8 @@
 import unittest
 import random
 
-from structs.card import CardCollection, Card
+from structs.card import Card
+from structs.cardCollection import CardCollection
 from structs.deck import Deck
 from structs.player import Player
 from structs.rank import Rank
@@ -112,10 +113,10 @@ class DeckTestCase(unittest.TestCase):
         deck.deal(players)
 
         # The deck is fully depleted
-        self.assertEqual(len(deck.cards), 0)
+        self.assertEqual(0, len(deck.cards))
         for player in players:
             # Each player has the required amount of cards
-            self.assertEqual(len(player.hand), 8)
+            self.assertEqual(8, len(player.hand))
 
 
 if __name__ == '__main__':
