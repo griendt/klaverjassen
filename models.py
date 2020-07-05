@@ -172,16 +172,14 @@ class Trick(object):
     A Round essentially contains 8 tricks in total.
     """
 
-    players: List[Player]
     leading_player_index: int
-
+    game: Game
     played_cards: List[Optional[Card]]
 
-    def __init__(self, players: List[Player], leading_player_index: int):
-        assert len(players) == 4
+    def __init__(self, game: Game, leading_player_index: int):
         assert 0 <= leading_player_index < 4
 
-        self.players = players
+        self.game = game
         self.leading_player_index = leading_player_index
 
         """
@@ -227,7 +225,7 @@ class Trick(object):
 
         :return: The set of legal cards that can be played.
         """
-        hand = self.players[self.player_index_to_play].hand
+        hand = self.game.players[self.player_index_to_play].hand
 
         if self.led_suit:
             # If the suit has already been decided, the player must follow if possible.
@@ -250,7 +248,7 @@ class Trick(object):
         assert card in self.legal_cards
 
         # Remove the card from the player's hand.
-        self.players[self.player_index_to_play].hand.remove(card)
+        self.game.players[self.player_index_to_play].hand.remove(card)
 
         # Add the card to the trick.
         self.played_cards[self.player_index_to_play] = card

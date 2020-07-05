@@ -1,37 +1,42 @@
 import unittest
 
-from models import Player, Trick, Card, Rank, Suit
+from models import Player, Trick, Card, Rank, Suit, Game
 
 
 class RoundTestCase(unittest.TestCase):
 
     def test_trick_initialization(self):
         players = [Player(), Player(), Player(), Player()]
-        trick = Trick(players=players, leading_player_index=0)
+        game = Game(players=players, bidder_index=0)
+        trick = Trick(game=game, leading_player_index=0)
 
         self.assertEqual(True, isinstance(trick, Trick))
 
     def test_tricks_initialization_fails_with_bad_parameters(self):
         def init_trick_with_invalid_players():
             players = [Player(), Player(), Player(), Player(), Player()]
-            trick = Trick(players=players, leading_player_index=0)
+            game = Game(players=players, bidder_index=0)
+            Trick(game=game, leading_player_index=0)
 
         def init_trick_with_invalid_leading_player_index():
-            players = [Player(), Player(), Player(), Player(), ]
-            trick = Trick(players=players, leading_player_index=4)
+            players = [Player(), Player(), Player(), Player()]
+            game = Game(players=players, bidder_index=0)
+            Trick(game=game, leading_player_index=4)
 
         self.assertRaises(AssertionError, init_trick_with_invalid_players)
         self.assertRaises(AssertionError, init_trick_with_invalid_leading_player_index)
 
     def test_a_trick_without_played_cards_has_no_leading_suit(self):
         players = [Player(), Player(), Player(), Player()]
-        trick = Trick(players=players, leading_player_index=0)
+        game = Game(players=players, bidder_index=0)
+        trick = Trick(game=game, leading_player_index=0)
 
         self.assertEqual(None, trick.led_suit)
 
     def test_a_card_can_be_played_in_a_trick(self):
         players = [Player(), Player(), Player(), Player()]
-        trick = Trick(players=players, leading_player_index=0)
+        game = Game(players=players, bidder_index=0)
+        trick = Trick(game=game, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
         trick.play(Card(suit=Suit.SPADES, rank=Rank.ACE))
@@ -46,7 +51,8 @@ class RoundTestCase(unittest.TestCase):
     def test_a_player_cannot_play_a_card_it_does_not_have(self):
         def play_bad_card():
             players = [Player(), Player(), Player(), Player()]
-            trick = Trick(players=players, leading_player_index=0)
+            game = Game(players=players, bidder_index=0)
+            trick = Trick(game=game, leading_player_index=0)
             players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
 
             # The player does not actually have this card; it should throw AssertionError
@@ -56,7 +62,8 @@ class RoundTestCase(unittest.TestCase):
 
     def test_a_player_must_follow_suit_if_possible(self):
         players = [Player(), Player(), Player(), Player()]
-        trick = Trick(players=players, leading_player_index=0)
+        game = Game(players=players, bidder_index=0)
+        trick = Trick(game=game, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
         players[1].hand = {
@@ -75,7 +82,7 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertEqual(
             True,
-            Card(suit=Suit.HEARTS, rank=Rank.KING) in trick.players[trick.player_index_to_play].hand
+            Card(suit=Suit.HEARTS, rank=Rank.KING) in game.players[trick.player_index_to_play].hand
         )
         # If the player attempts to play a different card anyway, then despite holding the card
         # in their hand, it should raise an exception.
@@ -83,7 +90,8 @@ class RoundTestCase(unittest.TestCase):
 
     def test_a_player_must_not_follow_suit_if_not_possible(self):
         players = [Player(), Player(), Player(), Player()]
-        trick = Trick(players=players, leading_player_index=0)
+        game = Game(players=players, bidder_index=0)
+        trick = Trick(game=game, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
         players[1].hand = {
