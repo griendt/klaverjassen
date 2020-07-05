@@ -1,7 +1,7 @@
-from models.deck import Deck
+import models.deck
 
 if __name__ == "__main__":
-    deck: Deck = Deck()
+    deck: models.deck.Deck = models.deck.Deck()
 
     print(deck)
 

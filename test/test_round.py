@@ -1,16 +1,15 @@
 import unittest
 
 from interaction import mock_input
-from models.player import Player
-from models.round import Round
-from models.suit import Suit, suits
+from models import Player, Round, Suit
 
 
 class RoundTestCase(unittest.TestCase):
     def test_a_round_can_be_initialized(self):
         players = [Player(), Player(), Player(), Player()]
         for bidder_index in range(4):
-            Round(players=players, bidder_index=bidder_index)
+            round = Round(players=players, bidder_index=bidder_index)
+            self.assertEqual(True, isinstance(round, Round))
 
     def test_a_round_throws_an_error_when_initialized_with_bad_info(self):
         players = [Player(), Player(), Player()]
@@ -32,14 +31,15 @@ class RoundTestCase(unittest.TestCase):
         players = [Player(), Player(), Player(), Player()]
 
         for suit in Suit:
-            Round(players=players, bidder_index=0, trump_suit=suit)
+            round = Round(players=players, bidder_index=0, trump_suit=suit)
+            self.assertEqual(True, isinstance(round, Round))
 
     def test_a_round_asks_for_trump_suit_when_started(self):
         players = [Player(), Player(), Player(), Player()]
 
         suit_identifier: str
         suit: Suit
-        for (suit_identifier, suit) in suits().items():
+        for (suit_identifier, suit) in Suit.suits().items():
             with mock_input(suit_identifier):
                 round = Round(players=players, bidder_index=0)
                 round.initialize()

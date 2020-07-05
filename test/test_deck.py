@@ -1,11 +1,7 @@
 import unittest
 import random
 
-from models.card import Card
-from models.deck import Deck
-from models.player import Player
-from models.rank import Rank
-from models.suit import Suit
+from models import Card, Deck, Player, Suit, Rank
 
 
 class DeckTestCase(unittest.TestCase):
