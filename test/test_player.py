@@ -1,7 +1,7 @@
 import unittest
 
-from structs.cardCollection import CardCollection
-from structs.player import Player
+from models.cardCollection import CardCollection
+from models.player import Player
 
 
 class PlayerTestCase(unittest.TestCase):

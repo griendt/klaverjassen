@@ -1,12 +1,12 @@
 import unittest
 import random
 
-from structs.card import Card
-from structs.cardCollection import CardCollection
-from structs.deck import Deck
-from structs.player import Player
-from structs.rank import Rank
-from structs.suit import Suit
+from models.card import Card
+from models.cardCollection import CardCollection
+from models.deck import Deck
+from models.player import Player
+from models.rank import Rank
+from models.suit import Suit
 
 
 class DeckTestCase(unittest.TestCase):

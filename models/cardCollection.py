@@ -1,6 +1,6 @@
 from typing import List
 
-from structs.card import Card
+from models.card import Card
 
 
 class CardCollection(object):

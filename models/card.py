@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
-from structs.rank import Rank
-from structs.suit import Suit
+from models.rank import Rank
+from models.suit import Suit
 
 
 class Card(NamedTuple):

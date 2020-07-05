@@ -1,9 +1,9 @@
 import random
 from typing import List
 
-from structs.card import Suit, Rank, Card
-from structs.cardCollection import CardCollection
-from structs.player import Player
+from models.card import Suit, Rank, Card
+from models.cardCollection import CardCollection
+from models.player import Player
 
 
 class Deck(CardCollection):
