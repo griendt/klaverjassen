@@ -282,6 +282,37 @@ class Trick(object):
         # Otherwise, the whole hand is legal.
         return follow_suit_cards if follow_suit_cards else hand
 
+    @property
+    def winning_card_index(self) -> int:
+        """
+        Find the index of the card that ranks the highest in this trick.
+
+        Note that the trick need not yet be complete (4 cards), but at least
+        one card needs to be played for this method to make sense.
+
+        :return: The index for `self.played_cards` that is the highest ranked.
+        """
+
+        assert len(self.played_cards) > 0
+        winning_index: int = -1
+        for index, card in enumerate(self.played_cards):
+            if winning_index == -1 or self.compare_cards(self.played_cards[winning_index], card) == 1:
+                winning_index = index
+
+        return winning_index
+
+    @property
+    def winning_card(self) -> Card:
+        """
+        Returns the card that is currently winning the trick.
+
+        Note that the trick need not yet be complete (4 cards), but at least
+        one card needs to be played for this method to make sense.
+
+        :return: The winning card.
+        """
+        return self.played_cards[self.winning_card_index]
+
     def compare_cards(self, card_1: Card, card_2: Card) -> int:
         """
         Compare two cards and detect which is considered to rank higher. The highest card
