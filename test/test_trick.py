@@ -81,5 +81,29 @@ class RoundTestCase(unittest.TestCase):
         # in their hand, it should raise an exception.
         self.assertRaises(AssertionError, trick.play, Card(suit=Suit.HEARTS, rank=Rank.KING))
 
+    def test_a_player_must_not_follow_suit_if_not_possible(self):
+        players = [Player(), Player(), Player(), Player()]
+        trick = Trick(players=players, leading_player_index=0)
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
+        players[1].hand = {
+            Card(suit=Suit.HEARTS, rank=Rank.KING),
+            Card(suit=Suit.HEARTS, rank=Rank.QUEEN),
+            Card(suit=Suit.DIAMONDS, rank=Rank.KING),
+        }
+
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.ACE))
+
+        # The next player may play any of these cards despite them not following suit.
+        self.assertEqual({
+            Card(suit=Suit.HEARTS, rank=Rank.KING),
+            Card(suit=Suit.HEARTS, rank=Rank.QUEEN),
+            Card(suit=Suit.DIAMONDS, rank=Rank.KING),
+        }, trick.legal_cards)
+
+        # Playing this card should be acceptable despite it not following suit.
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+
+
 if __name__ == "__main__":
     unittest.main()
