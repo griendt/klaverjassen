@@ -58,41 +58,27 @@ class DeckTestCase(unittest.TestCase):
         self.assertNotEqual(deck_1.cards, deck_2.cards)
 
     def test_card_collections_can_be_equal(self):
-        hand_1 = CardCollection([
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-        ])
+        hand_1 = CardCollection([Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
 
-        hand_2 = CardCollection([
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-        ])
+        hand_2 = CardCollection([Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
 
         self.assertEqual(hand_1, hand_2)
 
     def test_equal_card_collections_can_have_different_order(self):
-        hand_1 = CardCollection([
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-        ])
+        hand_1 = CardCollection([Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
 
-        hand_2 = CardCollection([
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-        ])
+        hand_2 = CardCollection([Card(suit=Suit.CLUBS, rank=Rank.JACK), Card(suit=Suit.HEARTS, rank=Rank.ACE),])
 
         self.assertEqual(hand_1, hand_2)
 
     def test_decks_are_equal_only_if_their_cards_are_equally_ordered(self):
-        deck_1 = Deck(cards=CardCollection([
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-        ]))
+        deck_1 = Deck(
+            cards=CardCollection([Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
+        )
 
-        deck_2 = Deck(cards=CardCollection([
-            Card(suit=Suit.HEARTS, rank=Rank.ACE),
-            Card(suit=Suit.CLUBS, rank=Rank.JACK),
-        ]))
+        deck_2 = Deck(
+            cards=CardCollection([Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
+        )
 
         self.assertEqual(deck_1, deck_2)
 
@@ -119,5 +105,5 @@ class DeckTestCase(unittest.TestCase):
             self.assertEqual(8, len(player.hand))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

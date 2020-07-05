@@ -19,11 +19,7 @@ class Deck(CardCollection):
         """
 
         # Default the card collection to a full deck if none are specified.
-        cards = [
-            Card(suit=suit, rank=rank)
-            for suit in Suit
-            for rank in Rank
-        ] if cards is None else cards
+        cards = [Card(suit=suit, rank=rank) for suit in Suit for rank in Rank] if cards is None else cards
         super().__init__(cards)
 
     def shuffle(self, seed: int = None) -> None:
@@ -47,7 +43,7 @@ class Deck(CardCollection):
         if len(self.cards) % len(players) != 0:
             raise ValueError(f"Cannot evenly deal {len(self.cards)} cards among {len(players)} players")
 
-        hand_size = int(len(self.cards)/len(players))
+        hand_size = int(len(self.cards) / len(players))
 
         for player in players:
             player.hand += self.cards[0:hand_size]

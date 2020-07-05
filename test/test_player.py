@@ -24,5 +24,6 @@ class PlayerTestCase(unittest.TestCase):
         player = Player(name="Foo")
         self.assertEqual(player.hand, CardCollection([]))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -5,7 +5,6 @@ from models.round import Round
 
 
 class RoundTestCase(unittest.TestCase):
-
     def test_a_round_can_be_initialized(self):
         players = [Player(), Player(), Player(), Player()]
         for bidder_index in range(4):
@@ -26,5 +25,5 @@ class RoundTestCase(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: Round(players=players, bidder_index=4))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

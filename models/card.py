@@ -7,4 +7,3 @@ from models.suit import Suit
 class Card(NamedTuple):
     suit: Suit
     rank: Rank
-
