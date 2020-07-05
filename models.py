@@ -13,6 +13,46 @@ class Rank(Enum):
     KING = 13
     ACE = 14
 
+    @staticmethod
+    def order():
+        """
+        The order of the ranks in which cards of the same suit are considered in tricks.
+        For the order in the trump suit, see `order_trump`.
+
+        :return: A dictionary keyed by this enum's values mapped to integers.
+            Higher integer means higher priority.
+        """
+        return {
+            Rank.SEVEN: 0,
+            Rank.EIGHT: 1,
+            Rank.NINE: 2,
+            Rank.JACK: 3,
+            Rank.QUEEN: 4,
+            Rank.KING: 5,
+            Rank.TEN: 6,
+            Rank.ACE: 7,
+        }
+
+    @staticmethod
+    def order_trump():
+        """
+        The order of the ranks in which cards of the same suit are considered in tricks,
+        given that the suit is the trump suit. For the normal order, see `order`.
+
+        :return: A dictionary keyed by this enum's values mapped to integers.
+            Higher integer means higher priority.
+        """
+        return {
+            Rank.SEVEN: 0,
+            Rank.EIGHT: 1,
+            Rank.QUEEN: 2,
+            Rank.KING: 3,
+            Rank.TEN: 4,
+            Rank.ACE: 5,
+            Rank.NINE: 6,
+            Rank.JACK: 7
+        }
+
 
 class Suit(Enum):
     CLUBS = 1
