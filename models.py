@@ -192,10 +192,11 @@ class Trick(object):
         # The card must be present in the player's hand before it may be played.
         assert card in self.players[self.player_index_to_play].hand
 
+        # Remove the card from the player's hand.
+        self.players[self.player_index_to_play].hand.remove(card)
+
         # Add the card to the trick.
         self.played_cards[self.player_index_to_play] = card
-
-        # Remove the card from the player's hand.
 
 
 class Round(object):
