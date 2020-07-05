@@ -51,8 +51,6 @@ class Deck(CardCollection):
 
         for player in players:
             player.hand += self.cards[0:hand_size]
-
-            print(player.hand)
             self.cards = self.cards[hand_size:]
 
     def __repr__(self):
