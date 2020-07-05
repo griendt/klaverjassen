@@ -291,7 +291,7 @@ class Trick(object):
         Note that this is unrelated to a card's score!
 
         :param card_1: The first card.
-        :param card_2: THe second card.
+        :param card_2: The second card.
         :return: A comparison value:
             -1 if the first card is better;
             1 if the second card is better;
