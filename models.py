@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NamedTuple, List, Optional, Set
+from typing import NamedTuple, List, Optional, Set, Dict
 
 
 class Rank(Enum):
@@ -275,8 +275,49 @@ class Trick(object):
             # Otherwise, the whole hand is legal.
             return follow_suit_cards if follow_suit_cards else hand
 
-        # When leading, any card in hand is legal.
-        return hand
+    def compare_cards(self, card_1: Card, card_2: Card) -> int:
+        """
+        Compare two cards and detect which is considered to rank higher. The highest card
+        is considered to win the trick (upon termination of the trick). Note that this is
+        a property inherent to a trick, as the led suit and the trump suit must be considered.
+
+        Note that this is unrelated to a card's score!
+
+        :param card_1: The first card.
+        :param card_2: THe second card.
+        :return: A comparison value:
+            -1 if the first card is better;
+            1 if the second card is better;
+            0 if the cards are considered equal.
+        """
+        if card_1.suit == card_2.suit:
+            # The cards are in the same suit. Comparison will be simple: check whether we're
+            # dealing with the trump suit, and see which card is higher.
+            # Note: it is possible that neither card can win the trick, if the suit is not the
+            # suit that the trick was led with.
+
+            if card_1.suit == self.game.trump_suit:
+                return -1 + 2 * int(Rank.order_trump()[card_1.rank] < Rank.order_trump()[card_2.rank])
+
+            return -1 + 2 * int(Rank.order()[card_1.rank] < Rank.order()[card_2.rank])
+
+        # If one of the cards is trump but the other is not, the one card always wins,
+        # regardless of the suit that was to be followed.
+        if card_1.suit == self.game.trump_suit:
+            return -1
+        if card_2.suit == self.game.trump_suit:
+            return 1
+
+        # Neither card is a trump card; check if either card follows suit. If one does,
+        # then that card wins. Otherwise, both cards are irrelevant to the trick and thus equal.
+        if card_1.suit == self.led_suit:
+            return -1
+        if card_2.suit == self.led_suit:
+            return 1
+
+        # The cards differ in suits, neither suit is trump, and neither suit was led.
+        # The cards are effectively incomparable.
+        return 0
 
     def play(self, card: Card):
         """Play a card to this trick."""
