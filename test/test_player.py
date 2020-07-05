@@ -5,12 +5,12 @@ from models import Player
 
 class PlayerTestCase(unittest.TestCase):
     def test_player_creation_with_name(self):
-        player = Player(hand=[], name="Foo")
+        player = Player(hand=set(), name="Foo")
         self.assertEqual(player.name, "Foo")
 
     def test_player_creation_with_random_name(self):
         for x in range(100):
-            player = Player(hand=[])
+            player = Player(hand=set())
 
             # The name is set despite it not being specified in initialisation
             self.assertIsNotNone(player.name)
@@ -21,7 +21,7 @@ class PlayerTestCase(unittest.TestCase):
 
     def test_player_creation_without_hand_specified(self):
         player = Player(name="Foo")
-        self.assertEqual(player.hand, [])
+        self.assertEqual(player.hand, set())
 
 
 if __name__ == "__main__":
