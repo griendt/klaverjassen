@@ -24,6 +24,7 @@ class Round(object):
 
         assert len(players) == 4
         assert 0 <= bidder_index < 4
+        assert trump_suit is None or isinstance(trump_suit, Suit)
         self.players = players
         self.bidder_index = bidder_index
         self.trump_suit = trump_suit
