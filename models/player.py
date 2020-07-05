@@ -1,13 +1,14 @@
 import random
+from typing import List
 
-from models.cardCollection import CardCollection
+from models.card import Card
 
 
 class Player(object):
-    hand: CardCollection
+    hand: List[Card]
     name: str
 
-    def __init__(self, hand: CardCollection = None, name: str = None):
+    def __init__(self, hand: List[Card] = None, name: str = None):
         """
         Initialize a player.
 
@@ -15,7 +16,7 @@ class Player(object):
         :param name: The given name of the player. If left unspecified, a random name is generated.
         """
 
-        self.hand = hand if hand is not None else CardCollection([])
+        self.hand = hand if hand is not None else []
         self.name = name if name is not None else self.generate_name()
 
     @staticmethod

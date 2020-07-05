@@ -1,17 +1,16 @@
 import unittest
 
-from models.cardCollection import CardCollection
 from models.player import Player
 
 
 class PlayerTestCase(unittest.TestCase):
     def test_player_creation_with_name(self):
-        player = Player(hand=CardCollection([]), name="Foo")
+        player = Player(hand=[], name="Foo")
         self.assertEqual(player.name, "Foo")
 
     def test_player_creation_with_random_name(self):
         for x in range(100):
-            player = Player(hand=CardCollection([]))
+            player = Player(hand=[])
 
             # The name is set despite it not being specified in initialisation
             self.assertIsNotNone(player.name)
@@ -22,7 +21,7 @@ class PlayerTestCase(unittest.TestCase):
 
     def test_player_creation_without_hand_specified(self):
         player = Player(name="Foo")
-        self.assertEqual(player.hand, CardCollection([]))
+        self.assertEqual(player.hand, [])
 
 
 if __name__ == "__main__":

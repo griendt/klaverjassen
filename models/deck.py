@@ -2,14 +2,13 @@ import random
 from typing import List
 
 from models.card import Suit, Rank, Card
-from models.cardCollection import CardCollection
 from models.player import Player
 
 
-class Deck(CardCollection):
+class Deck(object):
     seed: int = None
 
-    def __init__(self, cards: CardCollection = None):
+    def __init__(self, cards: List[Card] = None):
         """
         Initializes a deck. The cards in it are in the order that it is given.
         To randomize the order of the deck, call `shuffle`.
@@ -19,8 +18,7 @@ class Deck(CardCollection):
         """
 
         # Default the card collection to a full deck if none are specified.
-        cards = [Card(suit=suit, rank=rank) for suit in Suit for rank in Rank] if cards is None else cards
-        super().__init__(cards)
+        self.cards = [Card(suit=suit, rank=rank) for suit in Suit for rank in Rank] if cards is None else cards
 
     def shuffle(self, seed: int = None) -> None:
         """
