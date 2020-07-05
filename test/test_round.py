@@ -3,9 +3,10 @@ import unittest
 from models.player import Player
 from models.round import Round
 
+
 class RoundTestCase(unittest.TestCase):
 
-    def rounds_can_be_initialized(self):
+    def test_a_round_can_be_initialized(self):
         players = [Player(), Player(), Player(), Player()]
         for bidder_index in range(4):
             round = Round(players=players, bidder_index=bidder_index)
