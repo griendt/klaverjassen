@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from models.player import Player
-from models.suit import Suit
+from models.suit import Suit, suits
 
 
 class Round(object):
@@ -28,3 +28,13 @@ class Round(object):
         self.players = players
         self.bidder_index = bidder_index
         self.trump_suit = trump_suit
+
+    def initialize(self) -> None:
+        """
+        Begins the Round. If no trump suit was yet selected, this will prompt to the bidder to select a suit.
+        Input is then redirected to the bidding player to play a card.
+        """
+
+        if self.trump_suit is None:
+            user_input = input("Select trump suit (H, D, C, S): ")
+            self.trump_suit = suits()[user_input]
