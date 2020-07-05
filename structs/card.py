@@ -1,4 +1,4 @@
-from typing import NamedTuple, List
+from typing import NamedTuple
 
 from structs.rank import Rank
 from structs.suit import Suit
