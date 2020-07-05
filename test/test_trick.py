@@ -233,6 +233,38 @@ class RoundTestCase(unittest.TestCase):
                 Card(suit=second_suit, rank=second_rank),
             ))
 
+    def test_all_cards_are_legal_if_suit_cannot_be_followed_and_no_trump_is_available(self):
+        pass
+
+    def test_only_trump_cards_are_legal_if_suit_cannot_be_followed_and_trumps_are_available(self):
+        pass
+
+    def test_only_cards_of_the_same_suit_are_legal_if_available(self):
+        pass
+
+    def test_only_higher_trump_cards_are_legal_if_led_suit_is_trump_and_higher_trumps_are_available(self):
+        pass
+
+    def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_but_trumps_were_already_played(self):
+        pass
+
+    def test_lower_trump_is_allowed_if_led_suit_is_trump_and_no_higher_trumps_are_available(self):
+        pass
+
+    def test_lower_trump_is_allowed_if_no_other_cards_are_in_hand(self):
+        pass
+
+    def test_winning_card_detection_fails_if_no_card_was_played(self):
+        pass
+
+    def test_winning_card_can_be_done_for_incomplete_tricks(self):
+        pass
+
+    def test_winning_card_when_no_trumps_were_played(self):
+        pass
+
+    def test_winning_card_when_trumps_were_played(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
