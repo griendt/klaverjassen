@@ -261,7 +261,8 @@ class Trick(object):
     def legal_cards(self) -> Set[Card]:
         """
         Get the cards that can be played legally by the current player.
-        TODO: Logic around trump cards is not yet implemented!
+        TODO: Being forced to play trump is not yet implemented!
+        TODO: Not being forced to play trump when the partner has the winning card is not yet implemented!
 
         :return: The set of legal cards that can be played.
         """
@@ -276,7 +277,18 @@ class Trick(object):
 
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
         if self.game.trump_suit == self.led_suit:
-            pass
+            higher_trumps_available = {
+                card
+                for card in follow_suit_cards
+                if self.compare_cards(card, self.winning_card) == -1
+            }
+
+            if higher_trumps_available:
+                # The player has higher trumps than the currently winning trump.
+                # Only these cards are legal to play.
+                return higher_trumps_available
+
+            # The player has no higher trumps. Go back to the normal routine.
 
         # If the player can follow suit, those cards are the only legal ones.
         # Otherwise, the whole hand is legal.
@@ -365,7 +377,7 @@ class Trick(object):
         # The cards are effectively incomparable.
         return 0
 
-    def play(self, card: Card):
+    def play(self, card: Card) -> None:
         """Play a card to this trick."""
 
         # If the current player already played a card, he may not play another.
