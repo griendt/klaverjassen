@@ -184,13 +184,35 @@ class Trick(object):
 
         return self.leading_player_index + len([card for card in self.played_cards if card is not None]) % 4
 
+    @property
+    def legal_cards(self) -> Set[Card]:
+        """
+        Get the cards that can be played legally by the current player.
+        TODO: Logic around trump cards is not yet implemented!
+
+        :return: The set of legal cards that can be played.
+        """
+        hand = self.players[self.player_index_to_play].hand
+
+        if self.led_suit:
+            # If the suit has already been decided, the player must follow if possible.
+            follow_suit_cards = {card for card in hand if card.suit == self.led_suit}
+
+            # If the player can follow suit, those cards are the only legal ones.
+            # Otherwise, the whole hand is legal.
+            return follow_suit_cards if follow_suit_cards else hand
+
+        # When leading, any card in hand is legal.
+        return hand
+
     def play(self, card: Card):
         """Play a card to this trick."""
 
         # If the current player already played a card, he may not play another.
         assert self.played_cards[self.player_index_to_play] is None
-        # The card must be present in the player's hand before it may be played.
-        assert card in self.players[self.player_index_to_play].hand
+
+        # The card must be legal to play
+        assert card in self.legal_cards
 
         # Remove the card from the player's hand.
         self.players[self.player_index_to_play].hand.remove(card)

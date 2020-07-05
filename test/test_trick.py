@@ -54,5 +54,32 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertRaises(AssertionError, play_bad_card)
 
+    def test_a_player_must_follow_suit_if_possible(self):
+        players = [Player(), Player(), Player(), Player()]
+        trick = Trick(players=players, leading_player_index=0)
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
+        players[1].hand = {
+            Card(suit=Suit.SPADES, rank=Rank.KING),
+            Card(suit=Suit.SPADES, rank=Rank.QUEEN),
+            Card(suit=Suit.HEARTS, rank=Rank.KING),
+        }
+
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.ACE))
+
+        # The first player has led spades; the next player should have two legal choices.
+        self.assertEqual({
+            Card(suit=Suit.SPADES, rank=Rank.KING),
+            Card(suit=Suit.SPADES, rank=Rank.QUEEN),
+        }, trick.legal_cards)
+
+        self.assertEqual(
+            True,
+            Card(suit=Suit.HEARTS, rank=Rank.KING) in trick.players[trick.player_index_to_play].hand
+        )
+        # If the player attempts to play a different card anyway, then despite holding the card
+        # in their hand, it should raise an exception.
+        self.assertRaises(AssertionError, trick.play, Card(suit=Suit.HEARTS, rank=Rank.KING))
+
 if __name__ == "__main__":
     unittest.main()
