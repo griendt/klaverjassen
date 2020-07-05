@@ -43,6 +43,16 @@ class RoundTestCase(unittest.TestCase):
         # The card resides within the played cards of the trick
         self.assertEqual(True, Card(suit=Suit.SPADES, rank=Rank.ACE) in trick.played_cards)
 
+    def test_a_player_cannot_play_a_card_it_does_not_have(self):
+        def play_bad_card():
+            players = [Player(), Player(), Player(), Player()]
+            trick = Trick(players=players, leading_player_index=0)
+            players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
+
+            # The player does not actually have this card; it should throw AssertionError
+            trick.play(Card(suit=Suit.HEARTS, rank=Rank.ACE))
+
+        self.assertRaises(AssertionError, play_bad_card)
 
 if __name__ == "__main__":
     unittest.main()
