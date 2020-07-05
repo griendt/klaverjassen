@@ -267,13 +267,20 @@ class Trick(object):
         """
         hand = self.game.players[self.player_index_to_play].hand
 
-        if self.led_suit:
-            # If the suit has already been decided, the player must follow if possible.
-            follow_suit_cards = {card for card in hand if card.suit == self.led_suit}
+        # When leading, any card in hand is legal.
+        if not self.led_suit:
+            return hand
 
-            # If the player can follow suit, those cards are the only legal ones.
-            # Otherwise, the whole hand is legal.
-            return follow_suit_cards if follow_suit_cards else hand
+        # If the suit has already been decided, the player must follow if possible.
+        follow_suit_cards = {card for card in hand if card.suit == self.led_suit}
+
+        # If the led suit is the trump suit, only higher trumps are allowed (if available).
+        if self.game.trump_suit == self.led_suit:
+            pass
+
+        # If the player can follow suit, those cards are the only legal ones.
+        # Otherwise, the whole hand is legal.
+        return follow_suit_cards if follow_suit_cards else hand
 
     def compare_cards(self, card_1: Card, card_2: Card) -> int:
         """
@@ -293,12 +300,19 @@ class Trick(object):
         if card_1.suit == card_2.suit:
             # The cards are in the same suit. Comparison will be simple: check whether we're
             # dealing with the trump suit, and see which card is higher.
-            # Note: it is possible that neither card can win the trick, if the suit is not the
-            # suit that the trick was led with.
+            # Note: if the suit is neither trump not the led suit, the cards are incomparable.
 
             if card_1.suit == self.game.trump_suit:
                 return -1 + 2 * int(Rank.order_trump()[card_1.rank] < Rank.order_trump()[card_2.rank])
+            elif self.led_suit is not None and card_1.suit != self.led_suit:
+                # The cards are both in a non-trump suit that was also not led.
+                # This renders the cards effectively incomparable.
+                return 0
 
+            # The cards are in non-trump suit, but are either in the led suit,
+            # or no led suit was yet specified. We can compare them in the normal way.
+            # This is useful both for determine which card would win given the currently led suit,
+            # or to determine which card is better for the current player to lead a fresh trick with.
             return -1 + 2 * int(Rank.order()[card_1.rank] < Rank.order()[card_2.rank])
 
         # If one of the cards is trump but the other is not, the one card always wins,
@@ -310,6 +324,7 @@ class Trick(object):
 
         # Neither card is a trump card; check if either card follows suit. If one does,
         # then that card wins. Otherwise, both cards are irrelevant to the trick and thus equal.
+        # Note that if no card has been led yet, these checks will evaluate to false as well.
         if card_1.suit == self.led_suit:
             return -1
         if card_2.suit == self.led_suit:
