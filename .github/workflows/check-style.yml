@@ -1,4 +1,4 @@
-name: Code Style Checks
+name: MyPy/Black
 
 on:
   pull_request:
