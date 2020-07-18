@@ -279,7 +279,9 @@ class Trick(object):
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
         if self.game.trump_suit == self.led_suit:
             higher_trumps_available = {
-                card for card in follow_suit_cards if self.winning_card is None or self.compare_cards(card, self.winning_card) == -1
+                card
+                for card in follow_suit_cards
+                if self.winning_card is None or self.compare_cards(card, self.winning_card) == -1
             }
 
             if higher_trumps_available:
@@ -308,11 +310,7 @@ class Trick(object):
         winning_index: Optional[int] = None
         for index, card in enumerate(self.played_cards):
             winning_card: Optional[Card] = None if winning_index is None else self.played_cards[winning_index]
-            if (
-                winning_card is not None
-                and card is not None
-                and self.compare_cards(winning_card, card) == 1
-            ):
+            if winning_card is not None and card is not None and self.compare_cards(winning_card, card) == 1:
                 winning_index = index
 
         return winning_index

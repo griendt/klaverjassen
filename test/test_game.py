@@ -40,7 +40,7 @@ class RoundTestCase(unittest.TestCase):
         suit_identifier: str
         suit: Suit
         for (suit_identifier, suit) in Suit.suits().items():
-            with patch('builtins.input', return_value=suit_identifier):
+            with patch("builtins.input", return_value=suit_identifier):
                 game = Game(players=players, bidder_index=0)
                 game.initialize()
 
@@ -49,7 +49,7 @@ class RoundTestCase(unittest.TestCase):
     def test_a_round_fails_to_start_if_invalid_trump_suit_is_given(self) -> None:
         def bad_initialization() -> None:
             players = [Player(), Player(), Player(), Player()]
-            with patch('builtins.input', return_value="bad_suit"):
+            with patch("builtins.input", return_value="bad_suit"):
                 game = Game(players=players, bidder_index=0)
                 game.initialize()
 

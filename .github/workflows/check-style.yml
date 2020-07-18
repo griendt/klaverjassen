@@ -29,4 +29,4 @@ jobs:
           python -m mypy --disallow-untyped-defs --disallow-any-generics .
       - name: Black code style check
         run: |
-          python -m black . -l120 -tpy38
+          python -m black . -l120 -tpy38 --check
