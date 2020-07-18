@@ -1,4 +1,4 @@
-name: Verify Changelog Update
+name: Code Style Checks
 
 on:
   pull_request:
