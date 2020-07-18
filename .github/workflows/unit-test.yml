@@ -1,4 +1,4 @@
-name: Tests
+name: Run Unittests
 
 on:
   push:
@@ -27,8 +27,3 @@ jobs:
     - name: Test with unittest
       run: |
         python -m unittest discover
-    - name: Verify CHANGELOG.md change
-      run: |
-        git fetch
-        git diff HEAD origin/master --name-only
-        if [[ `git diff HEAD origin/master --name-only` =~ 'CHANGELOG.md' ]]; then exit 0; else exit 1; fi
