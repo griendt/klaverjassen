@@ -295,7 +295,7 @@ class Trick(object):
         return follow_suit_cards if follow_suit_cards else hand
 
     @property
-    def winning_card_index(self) -> int:
+    def winning_card_index(self) -> Optional[int]:
         """
         Find the index of the card that ranks the highest in this trick.
 
@@ -303,12 +303,14 @@ class Trick(object):
         one card needs to be played for this method to make sense.
 
         :return: The index for `self.played_cards` that is the highest ranked.
+            If no card was yet played, returns None.
         """
 
-        assert len(self.played_cards) > 0
-        winning_index: int = -1
+        winning_index: Optional[int] = None
         for index, card in enumerate(self.played_cards):
-            if winning_index == -1 or self.compare_cards(self.played_cards[winning_index], card) == 1:
+            if winning_index is None or (
+                card is not None and self.compare_cards(self.played_cards[winning_index], card) == 1
+            ):
                 winning_index = index
 
         return winning_index
@@ -321,9 +323,9 @@ class Trick(object):
         Note that the trick need not yet be complete (4 cards), but at least
         one card needs to be played for this method to make sense.
 
-        :return: The winning card.
+        :return: The winning card. Returns None if no card was yet played.
         """
-        return self.played_cards[self.winning_card_index]
+        return None if self.winning_card_index is None else self.played_cards[self.winning_card_index]
 
     def compare_cards(self, card_1: Card, card_2: Card) -> int:
         """
@@ -381,10 +383,10 @@ class Trick(object):
         """Play a card to this trick."""
 
         # If the current player already played a card, he may not play another.
-        assert self.played_cards[self.player_index_to_play] is None
+        assert self.played_cards[self.player_index_to_play] is None, f"Player index {self.player_index_to_play} already played a card this trick"
 
         # The card must be legal to play
-        assert card in self.legal_cards
+        assert card in self.legal_cards, f"Card {card} is not legal to play"
 
         # Remove the card from the player's hand.
         self.game.players[self.player_index_to_play].hand.remove(card)
