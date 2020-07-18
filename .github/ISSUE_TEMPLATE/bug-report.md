@@ -1,3 +1,12 @@
+---
+name: Bug Report
+about: Create a report to help improve the codebase
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## Checklist
 <!-- Please verify the following before submitting an issue. -->
 - [ ] Specify the version. Check if a newer version is available that solves the issue.
