@@ -5,7 +5,7 @@ from models import Card, Deck, Player, Suit, Rank
 
 
 class DeckTestCase(unittest.TestCase):
-    def test_deck_initialisation(self):
+    def test_deck_initialisation(self) -> None:
         deck = Deck()
 
         # We assume a Piquet deck which has 32 cards.
@@ -14,7 +14,7 @@ class DeckTestCase(unittest.TestCase):
         # The collection of cards must be unique.
         self.assertEqual(len(set(deck.cards)), 32)
 
-    def test_deck_random_shuffle(self):
+    def test_deck_random_shuffle(self) -> None:
         deck_1, deck_2 = Deck(), Deck()
 
         deck_1.shuffle()
@@ -24,7 +24,7 @@ class DeckTestCase(unittest.TestCase):
         # could be identical, but the odds of this are 1 in 52!.
         self.assertNotEqual(deck_1.cards, deck_2.cards)
 
-    def test_deck_shuffle_with_seed(self):
+    def test_deck_shuffle_with_seed(self) -> None:
         deck_1, deck_2, deck_3 = Deck(), Deck(), Deck()
         seed_1, seed_2 = random.randint(0, 100000), random.randint(0, 100000)
         deck_1.shuffle(seed_1)
@@ -39,7 +39,7 @@ class DeckTestCase(unittest.TestCase):
         # failing despite functioning as intended is 1 in 52!.
         self.assertNotEqual(deck_1.cards, deck_3.cards)
 
-    def test_deck_reshuffle_is_possible(self):
+    def test_deck_reshuffle_is_possible(self) -> None:
         deck_1, deck_2 = Deck(), Deck()
         seed = random.randint(0, 100000)
 
@@ -52,18 +52,14 @@ class DeckTestCase(unittest.TestCase):
         deck_2.shuffle(seed)
         self.assertNotEqual(deck_1.cards, deck_2.cards)
 
-    def test_decks_are_equal_only_if_their_cards_are_equally_ordered(self):
-        deck_1 = Deck(
-            cards=[Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK), ]
-        )
+    def test_decks_are_equal_only_if_their_cards_are_equally_ordered(self) -> None:
+        deck_1 = Deck(cards=[Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
 
-        deck_2 = Deck(
-            cards=[Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK), ]
-        )
+        deck_2 = Deck(cards=[Card(suit=Suit.HEARTS, rank=Rank.ACE), Card(suit=Suit.CLUBS, rank=Rank.JACK),])
 
         self.assertEqual(deck_1, deck_2)
 
-    def test_a_deck_cannot_be_dealt_if_not_evenly(self):
+    def test_a_deck_cannot_be_dealt_if_not_evenly(self) -> None:
         deck = Deck()
         players = [Player(), Player(), Player()]
 
@@ -74,7 +70,7 @@ class DeckTestCase(unittest.TestCase):
         # In this scenario, the method should throw a ValueError.
         self.assertRaises(ValueError, deck.deal, players)
 
-    def test_a_deck_can_be_dealt(self):
+    def test_a_deck_can_be_dealt(self) -> None:
         deck = Deck()
         players = [Player(), Player(), Player(), Player()]
         deck.deal(players)
