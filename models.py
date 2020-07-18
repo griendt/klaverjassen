@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 from enum import Enum
 from typing import NamedTuple, List, Optional, Set, Dict
@@ -14,7 +16,7 @@ class Rank(Enum):
     ACE = 14
 
     @staticmethod
-    def order():
+    def order() -> Dict[Rank, int]:
         """
         The order of the ranks in which cards of the same suit are considered in tricks.
         For the order in the trump suit, see `order_trump`.
@@ -34,7 +36,7 @@ class Rank(Enum):
         }
 
     @staticmethod
-    def order_trump():
+    def order_trump() -> Dict[Rank, int]:
         """
         The order of the ranks in which cards of the same suit are considered in tricks,
         given that the suit is the trump suit. For the normal order, see `order`.
@@ -50,7 +52,7 @@ class Rank(Enum):
             Rank.TEN: 4,
             Rank.ACE: 5,
             Rank.NINE: 6,
-            Rank.JACK: 7
+            Rank.JACK: 7,
         }
 
 
@@ -61,7 +63,7 @@ class Suit(Enum):
     SPADES = 4
 
     @staticmethod
-    def suits():
+    def suits() -> Dict[str, Suit]:
         return {
             "C": Suit.CLUBS,
             "H": Suit.HEARTS,
@@ -121,7 +123,7 @@ class Player(object):
 
 
 class Deck(object):
-    seed: int = None
+    seed: Optional[int] = None
 
     def __init__(self, cards: List[Card] = None):
         """
@@ -162,13 +164,13 @@ class Deck(object):
             player.hand = player.hand.union(set(self.cards[0:hand_size]))
             self.cards = self.cards[hand_size:]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.cards)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         # In case different seeds result in the same card order,
         # we should of course consider the decks equal anyway.
-        return self.cards == other.cards
+        return self.cards == other.cards if isinstance(other, type(self)) else False
 
 
 class Game(object):
@@ -231,17 +233,16 @@ class Trick(object):
         self.played_cards = [None, None, None, None]
 
     @property
-    def led_suit(self) -> Suit:
+    def led_suit(self) -> Optional[Suit]:
         """
         Get the suit with which this trick was led. Equal to the first card played in this trick.
         Returns None if no card has been played yet in this trick.
 
         :return: Suit
         """
-        return (None
-                if self.played_cards[self.leading_player_index] is None
-                else self.played_cards[self.leading_player_index].suit
-                )
+        led_card: Optional[Card] = self.played_cards[self.leading_player_index]
+
+        return None if led_card is None else led_card.suit
 
     @property
     def player_index_to_play(self) -> int:
@@ -278,9 +279,7 @@ class Trick(object):
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
         if self.game.trump_suit == self.led_suit:
             higher_trumps_available = {
-                card
-                for card in follow_suit_cards
-                if self.compare_cards(card, self.winning_card) == -1
+                card for card in follow_suit_cards if self.winning_card is None or self.compare_cards(card, self.winning_card) == -1
             }
 
             if higher_trumps_available:
@@ -295,7 +294,7 @@ class Trick(object):
         return follow_suit_cards if follow_suit_cards else hand
 
     @property
-    def winning_card_index(self) -> int:
+    def winning_card_index(self) -> Optional[int]:
         """
         Find the index of the card that ranks the highest in this trick.
 
@@ -303,27 +302,32 @@ class Trick(object):
         one card needs to be played for this method to make sense.
 
         :return: The index for `self.played_cards` that is the highest ranked.
+            If no card was yet played, returns None.
         """
 
-        assert len(self.played_cards) > 0
-        winning_index: int = -1
+        winning_index: Optional[int] = None
         for index, card in enumerate(self.played_cards):
-            if winning_index == -1 or self.compare_cards(self.played_cards[winning_index], card) == 1:
+            winning_card: Optional[Card] = None if winning_index is None else self.played_cards[winning_index]
+            if (
+                winning_card is not None
+                and card is not None
+                and self.compare_cards(winning_card, card) == 1
+            ):
                 winning_index = index
 
         return winning_index
 
     @property
-    def winning_card(self) -> Card:
+    def winning_card(self) -> Optional[Card]:
         """
         Returns the card that is currently winning the trick.
 
         Note that the trick need not yet be complete (4 cards), but at least
         one card needs to be played for this method to make sense.
 
-        :return: The winning card.
+        :return: The winning card. Returns None if no card was yet played.
         """
-        return self.played_cards[self.winning_card_index]
+        return None if self.winning_card_index is None else self.played_cards[self.winning_card_index]
 
     def compare_cards(self, card_1: Card, card_2: Card) -> int:
         """
@@ -381,10 +385,12 @@ class Trick(object):
         """Play a card to this trick."""
 
         # If the current player already played a card, he may not play another.
-        assert self.played_cards[self.player_index_to_play] is None
+        assert (
+            self.played_cards[self.player_index_to_play] is None
+        ), f"Player index {self.player_index_to_play} already played a card this trick"
 
         # The card must be legal to play
-        assert card in self.legal_cards
+        assert card in self.legal_cards, f"Card {card} is not legal to play"
 
         # Remove the card from the player's hand.
         self.game.players[self.player_index_to_play].hand.remove(card)
