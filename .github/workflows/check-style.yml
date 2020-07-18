@@ -1,5 +1,11 @@
 name: Code Style Checks
 
+on:
+  pull_request:
+    branches: [ '**' ]
+  push:
+    branches: [ '**' ]
+
 jobs:
   test:
 
