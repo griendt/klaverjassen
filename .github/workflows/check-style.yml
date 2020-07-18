@@ -1,9 +1,5 @@
 name: Code Style Checks
 
-on:
-  pull_request:
-    branches: [ master ]
-
 jobs:
   test:
 
