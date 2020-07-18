@@ -1,3 +1,12 @@
+---
+name: Feature Request
+about: Propose an enhancement
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## Checklist
 <!-- Please verify the following before submitting an issue. -->
 - [ ] Specify the version. Check if a newer version is available that has your feature.
