@@ -31,4 +31,4 @@ jobs:
       run: |
         git fetch
         git diff HEAD origin/master --name-only
-        "[[ `git diff HEAD origin/master --name-only` =~ 'CHANGELOG.md' ]] && exit 0 || exit 1"
+        "if [[ `git diff HEAD origin/master --name-only` =~ 'CHANGELOG.md' ]]; then exit 0; else exit 1; fi"
