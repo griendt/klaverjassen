@@ -2,7 +2,7 @@
 ![MyPy/Black](https://github.com/griendt/tarabish/workflows/MyPy/Black/badge.svg)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/griendt/tarabish)
-[![commit-activity](https://img.shields.io/github/commit-activity/y/griendt/tarabish)](https://github.com/griendt/tarabish/pulse/yearly)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/griendt/tarabish)
 [![issues](https://img.shields.io/github/issues/griendt/tarabish)](https://github.com/griendt/tarabish/issues?q=is%3Aopen)
 [![issues-closed-raw](https://img.shields.io/github/issues-closed/griendt/tarabish)](https://github.com/griendt/tarabish/issues?q=is%3Aclosed+)
 
