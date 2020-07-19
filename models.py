@@ -278,10 +278,8 @@ class Trick(object):
         higher_trump_cards = {
             card
             for card in hand
-            if card.suit == self.game.trump_suit and (
-                    self.winning_card is None or
-                    self.compare_cards(card, self.winning_card) == -1
-            )
+            if card.suit == self.game.trump_suit
+            and (self.winning_card is None or self.compare_cards(card, self.winning_card) == -1)
         }
 
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
@@ -396,7 +394,7 @@ class Trick(object):
 
         # If the current player already played a card, he may not play another.
         assert (
-                self.played_cards[self.player_index_to_play] is None
+            self.played_cards[self.player_index_to_play] is None
         ), f"Player index {self.player_index_to_play} already played a card this trick"
 
         # The card must be legal to play
