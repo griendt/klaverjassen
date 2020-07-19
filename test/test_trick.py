@@ -337,7 +337,7 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards)
 
-    def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_but_trumps_were_already_played(self) -> None:
+    def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_and_trumps_were_already_played(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         players[0].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.KING)}
         players[1].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
