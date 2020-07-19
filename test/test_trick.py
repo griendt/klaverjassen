@@ -386,12 +386,6 @@ class RoundTestCase(unittest.TestCase):
     def test_winning_card_can_be_done_for_incomplete_tricks(self) -> None:
         pass
 
-    def test_winning_card_when_no_trumps_were_played(self) -> None:
-        pass
-
-    def test_winning_card_when_trumps_were_played(self) -> None:
-        pass
-
 
 if __name__ == "__main__":
     unittest.main()
