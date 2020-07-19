@@ -33,6 +33,43 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertEqual(None, trick.led_suit)
 
+    def test_the_highest_card_in_a_trick_without_trumps(self) -> None:
+        players = [Player(), Player(), Player(), Player()]
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.HEARTS)
+        trick = Trick(game=game, leading_player_index=0)
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.SPADES, rank=Rank.KING)}
+        players[3].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.ACE)}
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.JACK))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.ACE))
+
+        # Player 4 played an ace, but it is in the wrong suit.
+        # Player 1 played a jack, but it is not the trump suit, so the 10 wins.
+        self.assertEqual(1, trick.winning_card_index)
+        self.assertEqual(Card(suit=Suit.SPADES, rank=Rank.TEN), trick.winning_card)
+
+    def test_the_highest_card_in_a_trick_with_trumps(self) -> None:
+        players = [Player(), Player(), Player(), Player()]
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
+        trick = Trick(game=game, leading_player_index=0)
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.SPADES, rank=Rank.KING)}
+        players[3].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN)}
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.JACK))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN))
+
+        # Player 4 played a seven, but because it is a trump card, he will win.
+        self.assertEqual(3, trick.winning_card_index)
+        self.assertEqual(Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN), trick.winning_card)
+
     def test_a_card_can_be_played_in_a_trick(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         game = Game(players=players, bidder_index=0)
@@ -300,7 +337,7 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards)
 
-    def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_but_trumps_were_already_played(self) -> None:
+    def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_and_trumps_were_already_played(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         players[0].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.KING)}
         players[1].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
