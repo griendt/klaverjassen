@@ -4,7 +4,6 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/griendt/tarabish)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/griendt/tarabish)
 [![issues](https://img.shields.io/github/issues/griendt/tarabish)](https://github.com/griendt/tarabish/issues?q=is%3Aopen)
-[![issues-closed-raw](https://img.shields.io/github/issues-closed/griendt/tarabish)](https://github.com/griendt/tarabish/issues?q=is%3Aclosed+)
 
 ## Klaverjassen
 A Python client for the game of Klaverjassen.
