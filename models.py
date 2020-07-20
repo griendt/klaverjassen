@@ -290,6 +290,7 @@ class Trick(object):
             if card.suit == self.game.trump_suit
             and (self.winning_card is None or self.compare_cards(card, self.winning_card) == -1)
         }
+        non_trump_cards = {card for card in hand if card.suit != self.game.trump_suit}
 
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
         if self.game.trump_suit == self.led_suit and higher_trump_cards:
@@ -299,14 +300,16 @@ class Trick(object):
         if follow_suit_cards:
             return follow_suit_cards
 
-        # Suit cannot be followed. We must play a (higher) trump if we can.
-        # TODO: This is where we must implement an additional check, in case it was
-        #   our teammate who is currently leading the trick. In that case, we need
-        #   not play a (higher) trump card as per Amsterdam rules.
-        if higher_trump_cards:
+        # Suit cannot be followed. We have to determine whether we need to play a higher trump,
+        # or whether the rest of our hand is legal.
+
+        if self.game.rules == RuleSet.AMSTERDAM and higher_trump_cards:
             return higher_trump_cards
 
-        non_trump_cards = set(filter(lambda card: card.suit != self.game.trump_suit, hand))
+        if self.game.rules == RuleSet.ROTTERDAM and (non_trump_cards or higher_trump_cards):
+            # There are either non-trump cards or higher trump cards that we can legally play,
+            # therefore those are the only legal cards.
+            return higher_trump_cards.union(non_trump_cards)
 
         # If the player has no higher trump cards, but does have non-trump cards
         # left in his hand, then those cards are legal to play. If the player, however,
