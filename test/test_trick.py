@@ -1,7 +1,7 @@
 import unittest
 from itertools import product
 
-from models import Player, Trick, Card, Rank, Suit, Game
+from models import Player, Trick, Card, Rank, Suit, Game, RuleSet
 
 
 class RoundTestCase(unittest.TestCase):
@@ -431,6 +431,57 @@ class RoundTestCase(unittest.TestCase):
         self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.TEN), trick.winning_card)
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.ACE))
         self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.ACE), trick.winning_card)
+
+    def test_overtrumping_your_teammate_is_not_mandatory_in_rotterdam_games_if_teammate_is_winning(self):
+        players = [Player(), Player(), Player(), Player()]
+        players[0].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.HEARTS, rank=Rank.NINE)}
+        players[3].hand = {
+            Card(suit=Suit.DIAMONDS, rank=Rank.ACE),
+            Card(suit=Suit.SPADES, rank=Rank.EIGHT),
+            Card(suit=Suit.SPADES, rank=Rank.JACK),
+        }
+
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.SPADES, rules=RuleSet.ROTTERDAM)
+        trick = Trick(game=game, leading_player_index=0)
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.NINE))
+
+        # Playing a higher trump is legal, but not necessary. The player may also drop the ace.
+        # Note however that playing a lower trump is still illegal.
+        self.assertEqual({
+            Card(suit=Suit.DIAMONDS, rank=Rank.ACE),
+            Card(suit=Suit.SPADES, rank=Rank.JACK),
+        }, trick.legal_cards)
+
+        # In an Amsterdam game, the player is forced to play the higher trump card.
+        game.rules = RuleSet.AMSTERDAM
+        self.assertEqual({
+            Card(suit=Suit.SPADES, rank=Rank.JACK),
+        }, trick.legal_cards)
+
+    def test_overtrumping_your_teammate_is_still_mandatory_in_rotterdam_games_if_it_is_the_led_suit(self):
+        players = [Player(), Player(), Player(), Player()]
+        players[0].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
+        players[2].hand = {
+            Card(suit=Suit.HEARTS, rank=Rank.NINE),
+            Card(suit=Suit.HEARTS, rank=Rank.QUEEN),
+            Card(suit=Suit.DIAMONDS, rank=Rank.ACE),
+        }
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.HEARTS, rules=RuleSet.ROTTERDAM)
+        trick = Trick(game=game, leading_player_index=0)
+
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+
+        # Despite the fact that the teammate is leading the trick so far, playing a lower trump
+        # or any other card is not allowed: when following suit in trump, over-trumping is still
+        # mandatory.
+        self.assertEqual({
+            Card(suit=Suit.HEARTS, rank=Rank.NINE), }, trick.legal_cards)
 
 
 if __name__ == "__main__":

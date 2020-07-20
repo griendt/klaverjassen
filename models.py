@@ -173,12 +173,20 @@ class Deck(object):
         return self.cards == other.cards if isinstance(other, type(self)) else False
 
 
+class RuleSet(Enum):
+    AMSTERDAM = "Amsterdam"
+    ROTTERDAM = "Rotterdam"
+
+
 class Game(object):
     players: List[Player]
     bidder_index: int
     trump_suit: Optional[Suit]
+    rules: RuleSet
 
-    def __init__(self, players: List[Player], bidder_index: int, trump_suit: Suit = None):
+    def __init__(
+        self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.AMSTERDAM
+    ):
         """
         Initializes a Round (i.e. a sequence of 8 tricks).
         :param players: The players present in this round. The order of the players is the order in which
@@ -190,12 +198,13 @@ class Game(object):
             on initialization, since the bidding player has yet to pick a suit. Hence, it is an optional argument.
         """
 
-        assert len(players) == 4
-        assert 0 <= bidder_index < 4
-        assert trump_suit is None or isinstance(trump_suit, Suit)
+        assert len(players) == 4, f"Invalid amount of players: {len(players)}"
+        assert 0 <= bidder_index < 4, f"Invalid bidder index: {bidder_index}"
+        assert trump_suit is None or isinstance(trump_suit, Suit), f"Invalid trump suit: {trump_suit}"
         self.players = players
         self.bidder_index = bidder_index
         self.trump_suit = trump_suit
+        self.rules = rules
 
     def initialize(self) -> None:
         """
