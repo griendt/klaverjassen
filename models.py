@@ -271,7 +271,6 @@ class Trick(object):
     def legal_cards(self) -> Set[Card]:
         """
         Get the cards that can be played legally by the current player.
-        TODO: Not being forced to play trump when the partner has the winning card is not yet implemented!
 
         :return: The set of legal cards that can be played.
         """
