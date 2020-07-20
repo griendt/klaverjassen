@@ -113,7 +113,7 @@ class RoundTestCase(unittest.TestCase):
 
         # The first player has led spades; the next player should have two legal choices.
         self.assertEqual(
-            {Card(suit=Suit.SPADES, rank=Rank.KING), Card(suit=Suit.SPADES, rank=Rank.QUEEN),}, trick.legal_cards
+            {Card(suit=Suit.SPADES, rank=Rank.KING), Card(suit=Suit.SPADES, rank=Rank.QUEEN), }, trick.legal_cards
         )
 
         self.assertEqual(True, Card(suit=Suit.HEARTS, rank=Rank.KING) in game.players[trick.player_index_to_play].hand)
@@ -161,7 +161,7 @@ class RoundTestCase(unittest.TestCase):
 
         # Unrelated cards cannot be compared properly without a trump suit or a led suit.
         self.assertEqual(
-            0, trick.compare_cards(Card(suit=Suit.HEARTS, rank=Rank.JACK), Card(suit=Suit.SPADES, rank=Rank.ACE),)
+            0, trick.compare_cards(Card(suit=Suit.HEARTS, rank=Rank.JACK), Card(suit=Suit.SPADES, rank=Rank.ACE), )
         )
 
         game.trump_suit = Suit.HEARTS
@@ -183,10 +183,10 @@ class RoundTestCase(unittest.TestCase):
         # The Johnny scores higher than the ten, in contrast to the normal order.
         # Same thing for the Nerf (9).
         self.assertEqual(
-            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.JACK), Card(suit=Suit.SPADES, rank=Rank.TEN),)
+            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.JACK), Card(suit=Suit.SPADES, rank=Rank.TEN), )
         )
         self.assertEqual(
-            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.NINE), Card(suit=Suit.SPADES, rank=Rank.TEN),)
+            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.NINE), Card(suit=Suit.SPADES, rank=Rank.TEN), )
         )
 
         # Any trump card will rank higher than any non-trump card.
@@ -197,7 +197,8 @@ class RoundTestCase(unittest.TestCase):
 
             self.assertEqual(
                 -1,
-                trick.compare_cards(Card(suit=Suit.SPADES, rank=first_rank), Card(suit=second_suit, rank=second_rank),),
+                trick.compare_cards(Card(suit=Suit.SPADES, rank=first_rank),
+                                    Card(suit=second_suit, rank=second_rank), ),
             )
 
         # Any two cards that both aren't trump will be incomparable.
@@ -250,10 +251,10 @@ class RoundTestCase(unittest.TestCase):
 
         # Two cards both in the led suit will obey the regular order.
         self.assertEqual(
-            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.QUEEN), Card(suit=Suit.SPADES, rank=Rank.JACK),)
+            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.QUEEN), Card(suit=Suit.SPADES, rank=Rank.JACK), )
         )
         self.assertEqual(
-            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.TEN), Card(suit=Suit.SPADES, rank=Rank.NINE),)
+            -1, trick.compare_cards(Card(suit=Suit.SPADES, rank=Rank.TEN), Card(suit=Suit.SPADES, rank=Rank.NINE), )
         )
 
         # Two cards that both are neither trump nor the led suit will be incomparable.
@@ -263,7 +264,7 @@ class RoundTestCase(unittest.TestCase):
 
             self.assertEqual(
                 0,
-                trick.compare_cards(Card(suit=first_suit, rank=first_rank), Card(suit=second_suit, rank=second_rank),),
+                trick.compare_cards(Card(suit=first_suit, rank=first_rank), Card(suit=second_suit, rank=second_rank), ),
             )
 
     def test_all_cards_are_legal_if_suit_cannot_be_followed_and_no_trump_is_available(self) -> None:
@@ -302,7 +303,7 @@ class RoundTestCase(unittest.TestCase):
         trick.play(Card(suit=Suit.SPADES, rank=Rank.QUEEN))
 
         self.assertEqual(
-            {Card(suit=Suit.HEARTS, rank=Rank.QUEEN), Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards
+            {Card(suit=Suit.HEARTS, rank=Rank.QUEEN), Card(suit=Suit.HEARTS, rank=Rank.ACE), }, trick.legal_cards
         )
 
     def test_only_cards_of_the_same_suit_are_legal_if_available(self) -> None:
@@ -319,7 +320,7 @@ class RoundTestCase(unittest.TestCase):
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.NINE))
 
         self.assertEqual(
-            {Card(suit=Suit.HEARTS, rank=Rank.QUEEN), Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards
+            {Card(suit=Suit.HEARTS, rank=Rank.QUEEN), Card(suit=Suit.HEARTS, rank=Rank.ACE), }, trick.legal_cards
         )
 
     def test_only_higher_trump_cards_are_legal_if_led_suit_is_trump_and_higher_trumps_are_available(self) -> None:
@@ -335,7 +336,7 @@ class RoundTestCase(unittest.TestCase):
 
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
 
-        self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards)
+        self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE), }, trick.legal_cards)
 
     def test_only_higher_trump_cards_are_legal_if_led_suit_is_unavailable_and_trumps_were_already_played(self) -> None:
         players = [Player(), Player(), Player(), Player()]
@@ -352,7 +353,7 @@ class RoundTestCase(unittest.TestCase):
         trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.KING))
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
 
-        self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE),}, trick.legal_cards)
+        self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.ACE), }, trick.legal_cards)
 
     def test_lower_trump_is_allowed_if_led_suit_is_trump_and_no_higher_trumps_are_available(self) -> None:
         players = [Player(), Player(), Player(), Player()]
@@ -378,13 +379,58 @@ class RoundTestCase(unittest.TestCase):
         )
 
     def test_lower_trump_is_allowed_if_no_other_cards_are_in_hand(self) -> None:
-        pass
+        players = [Player(), Player(), Player(), Player()]
+        players[0].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
+        players[1].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.ACE)}
+        players[2].hand = {
+            Card(suit=Suit.DIAMONDS, rank=Rank.TEN),
+            Card(suit=Suit.DIAMONDS, rank=Rank.KING),
+            Card(suit=Suit.DIAMONDS, rank=Rank.QUEEN),
+            Card(suit=Suit.DIAMONDS, rank=Rank.EIGHT),
+            Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN),
+        }
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
+        trick = Trick(game=game, leading_player_index=0)
 
-    def test_winning_card_detection_fails_if_no_card_was_played(self) -> None:
-        pass
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.ACE))
+
+        self.assertEqual(
+            {
+                Card(suit=Suit.DIAMONDS, rank=Rank.TEN),
+                Card(suit=Suit.DIAMONDS, rank=Rank.KING),
+                Card(suit=Suit.DIAMONDS, rank=Rank.QUEEN),
+                Card(suit=Suit.DIAMONDS, rank=Rank.EIGHT),
+                Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN),
+            },
+            trick.legal_cards,
+        )
+
+    def test_winning_card_detection_returns_none_if_no_card_was_played(self) -> None:
+        players = [Player(), Player(), Player(), Player()]
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
+        trick = Trick(game=game, leading_player_index=0)
+
+        self.assertEqual(None, trick.winning_card)
+        self.assertEqual(None, trick.winning_card_index)
 
     def test_winning_card_can_be_done_for_incomplete_tricks(self) -> None:
-        pass
+        players = [Player(), Player(), Player(), Player()]
+        players[0].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
+        players[1].hand = {Card(suit=Suit.HEARTS, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.HEARTS, rank=Rank.NINE)}
+        players[3].hand = {Card(suit=Suit.HEARTS, rank=Rank.ACE)}
+        game = Game(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
+        trick = Trick(game=game, leading_player_index=0)
+
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+        self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.KING), trick.winning_card)
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.TEN))
+        self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.TEN), trick.winning_card)
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.NINE))
+        self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.TEN), trick.winning_card)
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.ACE))
+        self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.ACE), trick.winning_card)
 
 
 if __name__ == "__main__":
