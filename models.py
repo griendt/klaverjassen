@@ -92,6 +92,12 @@ class Player(object):
         self.hand = hand if hand is not None else set()
         self.name = name if name is not None else self.generate_name()
 
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return False
+
+        return self.name == other.name and self.hand == other.hand
+
     @staticmethod
     def generate_name() -> str:
         """Generates a random, pronouncable name for a player.
