@@ -478,6 +478,33 @@ class TrickTestCase(unittest.TestCase):
         # mandatory.
         self.assertEqual({Card(suit=Suit.HEARTS, rank=Rank.NINE),}, trick.legal_cards)
 
+    def test_overtrumping_the_opponent_is_mandatory_if_teammate_is_not_leading(self) -> None:
+        players = [Player(), Player(), Player(), Player()]
+        players[0].hand = {Card(suit=Suit.HEARTS, rank=Rank.KING)}
+        players[1].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.SPADES, rank=Rank.QUEEN)}
+        players[3].hand = {
+            Card(suit=Suit.DIAMONDS, rank=Rank.ACE),
+            Card(suit=Suit.SPADES, rank=Rank.EIGHT),
+            Card(suit=Suit.SPADES, rank=Rank.JACK),
+        }
+
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES, rules=RuleSet.ROTTERDAM)
+        trick = Trick(deal=deal, leading_player_index=0)
+        trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.QUEEN))
+
+        self.assertEqual(
+            {Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards
+        )
+
+        # No matter whether this game is Rotterdam or Amsterdam style, the trump is the only legitimate option.
+        deal.rules = RuleSet.AMSTERDAM
+        self.assertEqual(
+            {Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
