@@ -442,7 +442,7 @@ class TrickTestCase(unittest.TestCase):
             Card(suit=Suit.SPADES, rank=Rank.JACK),
         }
 
-        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES, rules=RuleSet.ROTTERDAM)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES, rules=RuleSet.AMSTERDAM)
         trick = Trick(deal=deal, leading_player_index=0)
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
         trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
@@ -455,7 +455,7 @@ class TrickTestCase(unittest.TestCase):
         )
 
         # In an Amsterdam deal, the player is forced to play the higher trump card.
-        deal.rules = RuleSet.AMSTERDAM
+        deal.rules = RuleSet.ROTTERDAM
         self.assertEqual({Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards)
 
     def test_overtrumping_your_teammate_is_still_mandatory_in_amsterdam_deals_if_it_is_the_led_suit(self) -> None:

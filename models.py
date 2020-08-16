@@ -191,7 +191,7 @@ class Deal(object):
     rules: RuleSet
 
     def __init__(
-        self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.AMSTERDAM
+        self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.ROTTERDAM
     ):
         """
         Initializes a Round (i.e. a sequence of 8 tricks).
@@ -319,9 +319,16 @@ class Trick(object):
             return higher_trump_cards
 
         if self.deal.rules == RuleSet.AMSTERDAM and (non_trump_cards or higher_trump_cards):
-            # There are either non-trump cards or higher trump cards that we can legally play,
-            # therefore those are the only legal cards.
-            return higher_trump_cards.union(non_trump_cards)
+            # There are either non-trump cards or higher trump cards that we can legally play.
+            # We must decide whether we are forced to play a higher trump (if available).
+            if self.winning_card_index == self.deal.get_teammate_index(self.deal.players[self.player_index_to_play]):
+                # The teammate is currently leading this trick. In Amsterdam games, this means
+                # we do not need to play a higher trump, but non-trump cards are also legel.
+                return higher_trump_cards.union(non_trump_cards)
+            elif higher_trump_cards:
+                return higher_trump_cards
+            else:
+                return non_trump_cards
 
         # If the player has no higher trump cards, but does have non-trump cards
         # left in his hand, then those cards are legal to play. If the player, however,
