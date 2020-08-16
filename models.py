@@ -222,6 +222,13 @@ class Deal(object):
             user_input = input("Select trump suit (H, D, C, S): ")
             self.trump_suit = Suit.suits()[user_input]
 
+    def get_teammate_index(self, player: Player) -> int:
+        for index, value in enumerate(self.players):
+            if value == player:
+                return (index + 2) % 4
+
+        raise ValueError("Given player is not in the player list for this deal")
+
 
 class Trick(object):
     """
