@@ -55,6 +55,21 @@ class RoundTestCase(unittest.TestCase):
 
         self.assertRaises(KeyError, bad_initialization)
 
+    def test_a_deal_can_return_the_teammate_of_a_player(self) -> None:
+        players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
+        deal = Deal(players=players, bidder_index=0)
+
+        self.assertEqual(2, deal.get_teammate_index(Player(name="1")))
+        self.assertEqual(3, deal.get_teammate_index(Player(name="2")))
+        self.assertEqual(0, deal.get_teammate_index(Player(name="3")))
+        self.assertEqual(1, deal.get_teammate_index(Player(name="4")))
+
+    def test_a_deal_throws_an_error_if_an_invalid_player_requests_his_teammate(self) -> None:
+        players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
+        deal = Deal(players=players, bidder_index=0)
+        unknown_player = Player(name="5")
+        self.assertRaises(ValueError, deal.get_teammate_index, [unknown_player])
+
 
 if __name__ == "__main__":
     unittest.main()
