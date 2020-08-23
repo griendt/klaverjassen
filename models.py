@@ -194,13 +194,13 @@ class Deal(object):
         self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.ROTTERDAM
     ):
         """
-        Initializes a Round (i.e. a sequence of 8 tricks).
-        :param players: The players present in this round. The order of the players is the order in which
-            cards must be played in the 8 tricks that compose this Round. Note that the first trick need
+        Initializes a Deal (i.e. a sequence of 8 tricks).
+        :param players: The players present in this deal. The order of the players is the order in which
+            cards must be played in the 8 tricks that compose this Deal. Note that the first trick need
             not be played by the player at index 0; the bidder_index parameter controls this.
         :param bidder_index: The index of the bidding player, i.e. the player that decides the trump suit
             and leads the first trick.
-        :param trump_suit: Set the trump suit for this round. Typically, we do not know the trump suit yet
+        :param trump_suit: Set the trump suit for this deal. Typically, we do not know the trump suit yet
             on initialization, since the bidding player has yet to pick a suit. Hence, it is an optional argument.
         """
 
@@ -214,7 +214,7 @@ class Deal(object):
 
     def initialize(self) -> None:
         """
-        Begins the Round. If no trump suit was yet selected, this will prompt to the bidder to select a suit.
+        Begins the Deal. If no trump suit was yet selected, this will prompt to the bidder to select a suit.
         Input is then redirected to the bidding player to play a card.
         """
 
@@ -232,8 +232,8 @@ class Deal(object):
 
 class Trick(object):
     """
-    A Trick object represents the state of a single trick within a Round.
-    A Round essentially contains 8 tricks in total.
+    A Trick object represents the state of a single trick within a Deal.
+    A Deal essentially contains 8 tricks in total.
     """
 
     leading_player_index: int
