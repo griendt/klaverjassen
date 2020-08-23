@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from enum import Enum
-from typing import NamedTuple, List, Optional, Set, Dict
+from typing import NamedTuple, List, Optional, Set, Dict, Any
 
 
 class Rank(Enum):
@@ -92,6 +92,12 @@ class Player(object):
         self.hand = hand if hand is not None else set()
         self.name = name if name is not None else self.generate_name()
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Player):
+            return False
+
+        return self.name == other.name and self.hand == other.hand
+
     @staticmethod
     def generate_name() -> str:
         """Generates a random, pronouncable name for a player.
@@ -104,9 +110,9 @@ class Player(object):
 
         suffices = ["d", "h", "l", "n", "s"]
 
-        # The core of the name is a randoma mount of consonant+vowel combinations.
+        # The core of the name is a random amount of consonant+vowel combinations.
         syllables = random.randint(2, 3)
-        name = "".join([random.choice(consonants) + random.choice(vowels) for syllable in range(syllables)])
+        name = "".join([random.choice(consonants) + random.choice(vowels) for _ in range(syllables)])
 
         # Add a prefix in the form of an extra vowel with a certain chance
         if random.randint(0, 1):
@@ -173,12 +179,20 @@ class Deck(object):
         return self.cards == other.cards if isinstance(other, type(self)) else False
 
 
-class Game(object):
+class RuleSet(Enum):
+    AMSTERDAM = "Amsterdam"
+    ROTTERDAM = "Rotterdam"
+
+
+class Deal(object):
     players: List[Player]
     bidder_index: int
     trump_suit: Optional[Suit]
+    rules: RuleSet
 
-    def __init__(self, players: List[Player], bidder_index: int, trump_suit: Suit = None):
+    def __init__(
+        self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.ROTTERDAM
+    ):
         """
         Initializes a Round (i.e. a sequence of 8 tricks).
         :param players: The players present in this round. The order of the players is the order in which
@@ -190,12 +204,13 @@ class Game(object):
             on initialization, since the bidding player has yet to pick a suit. Hence, it is an optional argument.
         """
 
-        assert len(players) == 4
-        assert 0 <= bidder_index < 4
-        assert trump_suit is None or isinstance(trump_suit, Suit)
+        assert len(players) == 4, f"Invalid amount of players: {len(players)}"
+        assert 0 <= bidder_index < 4, f"Invalid bidder index: {bidder_index}"
+        assert trump_suit is None or isinstance(trump_suit, Suit), f"Invalid trump suit: {trump_suit}"
         self.players = players
         self.bidder_index = bidder_index
         self.trump_suit = trump_suit
+        self.rules = rules
 
     def initialize(self) -> None:
         """
@@ -207,6 +222,13 @@ class Game(object):
             user_input = input("Select trump suit (H, D, C, S): ")
             self.trump_suit = Suit.suits()[user_input]
 
+    def get_teammate_index(self, player: Player) -> int:
+        for index, value in enumerate(self.players):
+            if value == player:
+                return (index + 2) % 4
+
+        raise ValueError("Given player is not in the player list for this deal")
+
 
 class Trick(object):
     """
@@ -215,13 +237,13 @@ class Trick(object):
     """
 
     leading_player_index: int
-    game: Game
+    deal: Deal
     played_cards: List[Optional[Card]]
 
-    def __init__(self, game: Game, leading_player_index: int):
+    def __init__(self, deal: Deal, leading_player_index: int):
         assert 0 <= leading_player_index < 4
 
-        self.game = game
+        self.deal = deal
         self.leading_player_index = leading_player_index
 
         """
@@ -262,11 +284,10 @@ class Trick(object):
     def legal_cards(self) -> Set[Card]:
         """
         Get the cards that can be played legally by the current player.
-        TODO: Not being forced to play trump when the partner has the winning card is not yet implemented!
 
         :return: The set of legal cards that can be played.
         """
-        hand = self.game.players[self.player_index_to_play].hand
+        hand = self.deal.players[self.player_index_to_play].hand
 
         # When leading, any card in hand is legal.
         if self.led_suit is None:
@@ -278,26 +299,36 @@ class Trick(object):
         higher_trump_cards = {
             card
             for card in hand
-            if card.suit == self.game.trump_suit
+            if card.suit == self.deal.trump_suit
             and (self.winning_card is None or self.compare_cards(card, self.winning_card) == -1)
         }
+        non_trump_cards = {card for card in hand if card.suit != self.deal.trump_suit}
 
         # If the led suit is the trump suit, only higher trumps are allowed (if available).
-        if self.game.trump_suit == self.led_suit and higher_trump_cards:
+        if self.deal.trump_suit == self.led_suit and higher_trump_cards:
             return higher_trump_cards
 
         # If the player can follow suit, those cards are the only legal ones.
         if follow_suit_cards:
             return follow_suit_cards
 
-        # Suit cannot be followed. We must play a (higher) trump if we can.
-        # TODO: This is where we must implement an additional check, in case it was
-        #   our teammate who is currently leading the trick. In that case, we need
-        #   not play a (higher) trump card as per Amsterdam rules.
-        if higher_trump_cards:
+        # Suit cannot be followed. We have to determine whether we need to play a higher trump,
+        # or whether the rest of our hand is legal.
+
+        if self.deal.rules == RuleSet.ROTTERDAM and higher_trump_cards:
             return higher_trump_cards
 
-        non_trump_cards = set(filter(lambda card: card.suit != self.game.trump_suit, hand))
+        if self.deal.rules == RuleSet.AMSTERDAM and (non_trump_cards or higher_trump_cards):
+            # There are either non-trump cards or higher trump cards that we can legally play.
+            # We must decide whether we are forced to play a higher trump (if available).
+            if self.winning_card_index == self.deal.get_teammate_index(self.deal.players[self.player_index_to_play]):
+                # The teammate is currently leading this trick. In Amsterdam games, this means
+                # we do not need to play a higher trump, but non-trump cards are also legel.
+                return higher_trump_cards.union(non_trump_cards)
+            elif higher_trump_cards:
+                return higher_trump_cards
+            else:
+                return non_trump_cards
 
         # If the player has no higher trump cards, but does have non-trump cards
         # left in his hand, then those cards are legal to play. If the player, however,
@@ -357,7 +388,7 @@ class Trick(object):
             # dealing with the trump suit, and see which card is higher.
             # Note: if the suit is neither trump not the led suit, the cards are incomparable.
 
-            if card_1.suit == self.game.trump_suit:
+            if card_1.suit == self.deal.trump_suit:
                 return -1 + 2 * int(Rank.order_trump()[card_1.rank] < Rank.order_trump()[card_2.rank])
             elif self.led_suit is not None and card_1.suit != self.led_suit:
                 # The cards are both in a non-trump suit that was also not led.
@@ -372,9 +403,9 @@ class Trick(object):
 
         # If one of the cards is trump but the other is not, the one card always wins,
         # regardless of the suit that was to be followed.
-        if card_1.suit == self.game.trump_suit:
+        if card_1.suit == self.deal.trump_suit:
             return -1
-        if card_2.suit == self.game.trump_suit:
+        if card_2.suit == self.deal.trump_suit:
             return 1
 
         # Neither card is a trump card; check if either card follows suit. If one does,
@@ -401,7 +432,7 @@ class Trick(object):
         assert card in self.legal_cards, f"Card {card} is not legal to play"
 
         # Remove the card from the player's hand.
-        self.game.players[self.player_index_to_play].hand.remove(card)
+        self.deal.players[self.player_index_to_play].hand.remove(card)
 
         # Add the card to the trick.
         self.played_cards[self.player_index_to_play] = card
