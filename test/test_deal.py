@@ -1,14 +1,14 @@
 import unittest
 from unittest.mock import patch
 
-from models import Player, Deal, Suit
+from models import Player, Deal, Suit, Card, Rank
 
 
 class DealTestCase(unittest.TestCase):
     def test_a_deal_can_be_initialized(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         for bidder_index in range(4):
-            deal = Deal(players=players, bidder_index=bidder_index)
+            deal = Deal(players=players, bidder_index=bidder_index, trump_suit=Suit.SPADES)
             self.assertEqual(True, isinstance(deal, Deal))
 
     def test_a_deal_throws_an_error_when_initialized_with_bad_info(self) -> None:
@@ -43,7 +43,6 @@ class DealTestCase(unittest.TestCase):
         for (suit_identifier, suit) in Suit.suits().items():
             with patch("builtins.input", return_value=suit_identifier):
                 deal = Deal(players=players, bidder_index=0)
-                deal.initialize()
 
                 self.assertEqual(deal.trump_suit, suit)
 
@@ -51,14 +50,13 @@ class DealTestCase(unittest.TestCase):
         def bad_initialization() -> None:
             players = [Player(), Player(), Player(), Player()]
             with patch("builtins.input", return_value="bad_suit"):
-                deal = Deal(players=players, bidder_index=0)
-                deal.initialize()
+                _ = Deal(players=players, bidder_index=0)
 
         self.assertRaises(KeyError, bad_initialization)
 
     def test_a_deal_can_return_the_teammate_of_a_player(self) -> None:
         players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
 
         self.assertEqual(2, deal.get_teammate_index(Player(name="1")))
         self.assertEqual(3, deal.get_teammate_index(Player(name="2")))
@@ -67,7 +65,7 @@ class DealTestCase(unittest.TestCase):
 
     def test_a_deal_throws_an_error_if_an_invalid_player_requests_his_teammate(self) -> None:
         players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
         unknown_player = Player(name="5")
         self.assertRaises(ValueError, deal.get_teammate_index, [unknown_player])
 
