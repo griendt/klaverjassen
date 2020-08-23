@@ -7,7 +7,7 @@ from models import Player, Trick, Card, Rank, Suit, Deal, RuleSet
 class TrickTestCase(unittest.TestCase):
     def test_trick_initialization(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
         trick = Trick(deal=deal, leading_player_index=0)
 
         self.assertEqual(True, isinstance(trick, Trick))
@@ -15,12 +15,12 @@ class TrickTestCase(unittest.TestCase):
     def test_tricks_initialization_fails_with_bad_parameters(self) -> None:
         def init_trick_with_invalid_players() -> None:
             players = [Player(), Player(), Player(), Player(), Player()]
-            deal = Deal(players=players, bidder_index=0)
+            deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
             Trick(deal=deal, leading_player_index=0)
 
         def init_trick_with_invalid_leading_player_index() -> None:
             players = [Player(), Player(), Player(), Player()]
-            deal = Deal(players=players, bidder_index=0)
+            deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
             Trick(deal=deal, leading_player_index=4)
 
         self.assertRaises(AssertionError, init_trick_with_invalid_players)
@@ -28,7 +28,7 @@ class TrickTestCase(unittest.TestCase):
 
     def test_a_trick_without_played_cards_has_no_leading_suit(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
         trick = Trick(deal=deal, leading_player_index=0)
 
         self.assertEqual(None, trick.led_suit)
@@ -36,7 +36,7 @@ class TrickTestCase(unittest.TestCase):
     def test_the_highest_card_in_a_trick_without_trumps(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         deal = Deal(players=players, bidder_index=0, trump_suit=Suit.HEARTS)
-        trick = Trick(deal=deal, leading_player_index=0)
+        trick = deal.current_trick
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK)}
         players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
@@ -55,7 +55,7 @@ class TrickTestCase(unittest.TestCase):
     def test_the_highest_card_in_a_trick_with_trumps(self) -> None:
         players = [Player(), Player(), Player(), Player()]
         deal = Deal(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
-        trick = Trick(deal=deal, leading_player_index=0)
+        trick = deal.current_trick
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK)}
         players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
@@ -72,7 +72,7 @@ class TrickTestCase(unittest.TestCase):
 
     def test_a_card_can_be_played_in_a_trick(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
         trick = Trick(deal=deal, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
@@ -88,7 +88,7 @@ class TrickTestCase(unittest.TestCase):
     def test_a_player_cannot_play_a_card_it_does_not_have(self) -> None:
         def play_bad_card() -> None:
             players = [Player(), Player(), Player(), Player()]
-            deal = Deal(players=players, bidder_index=0)
+            deal = Deal(players=players, bidder_index=0, trump_suit=Suit.SPADES)
             trick = Trick(deal=deal, leading_player_index=0)
             players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
 
@@ -99,7 +99,7 @@ class TrickTestCase(unittest.TestCase):
 
     def test_a_player_must_follow_suit_if_possible(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.CLUBS)
         trick = Trick(deal=deal, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
@@ -123,7 +123,7 @@ class TrickTestCase(unittest.TestCase):
 
     def test_a_player_must_not_follow_suit_if_not_possible(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.CLUBS)
         trick = Trick(deal=deal, leading_player_index=0)
 
         players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.ACE)}
@@ -150,7 +150,7 @@ class TrickTestCase(unittest.TestCase):
 
     def test_cards_can_be_compared_before_a_suit_is_led(self) -> None:
         players = [Player(), Player(), Player(), Player()]
-        deal = Deal(players=players, bidder_index=0)
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.CLUBS)
         trick = Trick(deal=deal, leading_player_index=0)
 
         # The queen should be consider higher, as we are assuming we are not
@@ -420,7 +420,7 @@ class TrickTestCase(unittest.TestCase):
         players[2].hand = {Card(suit=Suit.HEARTS, rank=Rank.NINE)}
         players[3].hand = {Card(suit=Suit.HEARTS, rank=Rank.ACE)}
         deal = Deal(players=players, bidder_index=0, trump_suit=Suit.DIAMONDS)
-        trick = Trick(deal=deal, leading_player_index=0)
+        trick = deal.current_trick
 
         trick.play(Card(suit=Suit.HEARTS, rank=Rank.KING))
         self.assertEqual(Card(suit=Suit.HEARTS, rank=Rank.KING), trick.winning_card)
@@ -500,7 +500,6 @@ class TrickTestCase(unittest.TestCase):
         # No matter whether this game is Rotterdam or Amsterdam style, the trump is the only legitimate option.
         deal.rules = RuleSet.AMSTERDAM
         self.assertEqual({Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards)
-
 
 if __name__ == "__main__":
     unittest.main()

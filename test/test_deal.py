@@ -69,6 +69,42 @@ class DealTestCase(unittest.TestCase):
         unknown_player = Player(name="5")
         self.assertRaises(ValueError, deal.get_teammate_index, [unknown_player])
 
+    def test_no_new_trick_is_started_when_all_cards_are_played(self) -> None:
+        players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.HEARTS)
+        trick = deal.current_trick
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN)}
+        players[2].hand = {Card(suit=Suit.SPADES, rank=Rank.KING)}
+        players[3].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN)}
+
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.JACK))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN))
+
+        self.assertEqual(1, len(deal.tricks))
+
+    def test_a_new_trick_is_started_when_there_are_cards_left_to_play(self) -> None:
+        players = [Player(name="1"), Player(name="2"), Player(name="3"), Player(name="4")]
+        deal = Deal(players=players, bidder_index=0, trump_suit=Suit.HEARTS)
+        trick = deal.current_trick
+
+        players[0].hand = {Card(suit=Suit.SPADES, rank=Rank.JACK), Card(suit=Suit.SPADES, rank=Rank.QUEEN)}
+        players[1].hand = {Card(suit=Suit.SPADES, rank=Rank.TEN), Card(suit=Suit.SPADES, rank=Rank.EIGHT)}
+        players[2].hand = {Card(suit=Suit.SPADES, rank=Rank.KING), Card(suit=Suit.SPADES, rank=Rank.SEVEN)}
+        players[3].hand = {Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN), Card(suit=Suit.DIAMONDS, rank=Rank.EIGHT)}
+
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.JACK))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.TEN))
+        trick.play(Card(suit=Suit.SPADES, rank=Rank.KING))
+        trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.SEVEN))
+
+        self.assertEqual(2, len(deal.tricks))
+        self.assertEqual(1, deal.current_trick.player_index_to_play)
+        self.assertEqual(1, deal.current_trick.leading_player_index)
+
 
 if __name__ == "__main__":
     unittest.main()
