@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from enum import Enum
-from typing import NamedTuple, List, Optional, Set, Dict
+from typing import NamedTuple, List, Optional, Set, Dict, Any
 
 
 class Rank(Enum):
@@ -92,7 +92,7 @@ class Player(object):
         self.hand = hand if hand is not None else set()
         self.name = name if name is not None else self.generate_name()
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Player):
             return False
 
