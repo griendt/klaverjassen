@@ -189,9 +189,10 @@ class Deal(object):
     bidder_index: int
     trump_suit: Optional[Suit]
     rules: RuleSet
+    tricks: List[Trick]
 
     def __init__(
-        self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.ROTTERDAM
+            self, players: List[Player], bidder_index: int, trump_suit: Suit = None, rules: RuleSet = RuleSet.ROTTERDAM
     ):
         """
         Initializes a Deal (i.e. a sequence of 8 tricks).
@@ -211,16 +212,15 @@ class Deal(object):
         self.bidder_index = bidder_index
         self.trump_suit = trump_suit
         self.rules = rules
-
-    def initialize(self) -> None:
-        """
-        Begins the Deal. If no trump suit was yet selected, this will prompt to the bidder to select a suit.
-        Input is then redirected to the bidding player to play a card.
-        """
+        self.tricks = []
 
         if self.trump_suit is None:
             user_input = input("Select trump suit (H, D, C, S): ")
             self.trump_suit = Suit.suits()[user_input]
+
+        # The first trick is always started by the bidder.
+        trick = Trick(deal=self, leading_player_index=self.bidder_index)
+        self.tricks.append(trick)
 
     def get_teammate_index(self, player: Player) -> int:
         for index, value in enumerate(self.players):
@@ -228,6 +228,28 @@ class Deal(object):
                 return (index + 2) % 4
 
         raise ValueError("Given player is not in the player list for this deal")
+
+    @property
+    def current_trick(self) -> Trick:
+        """
+        Get the current trick. Returns None if no Trick has started yet or the final Trick has already ended.
+        :return: The Trick.
+        """
+
+        return None if not self.tricks else self.tricks[-1]
+
+    def new_trick(self) -> None:
+        """Start a new trick in this Deal."""
+        if self.current_trick:
+            assert self.current_trick.has_ended, "Cannot start a new trick if the previous has not ended"
+
+        if not self.players[self.current_trick.winning_card_index].hand:
+            # All cards have been played. This will end the Deal.
+            # TODO: Implement the point system, automatically start a new Deal if needed, and so on.
+            return
+
+        new_trick = Trick(self, leading_player_index=self.current_trick.winning_card_index)
+        self.tricks.append(new_trick)
 
 
 class Trick(object):
@@ -239,6 +261,7 @@ class Trick(object):
     leading_player_index: int
     deal: Deal
     played_cards: List[Optional[Card]]
+    has_ended: bool = False
 
     def __init__(self, deal: Deal, leading_player_index: int):
         assert 0 <= leading_player_index < 4
@@ -300,7 +323,7 @@ class Trick(object):
             card
             for card in hand
             if card.suit == self.deal.trump_suit
-            and (self.winning_card is None or self.compare_cards(card, self.winning_card) == -1)
+               and (self.winning_card is None or self.compare_cards(card, self.winning_card) == -1)
         }
         non_trump_cards = {card for card in hand if card.suit != self.deal.trump_suit}
 
@@ -425,7 +448,7 @@ class Trick(object):
 
         # If the current player already played a card, he may not play another.
         assert (
-            self.played_cards[self.player_index_to_play] is None
+                self.played_cards[self.player_index_to_play] is None
         ), f"Player index {self.player_index_to_play} already played a card this trick"
 
         # The card must be legal to play
@@ -436,3 +459,16 @@ class Trick(object):
 
         # Add the card to the trick.
         self.played_cards[self.player_index_to_play] = card
+
+        # If everyone has played a card, the trick is finished.
+        if None not in self.played_cards:
+            self.end()
+
+    def end(self):
+        """
+        This function is called when all cards have been played in this Trick.
+        We can count points here, detect which player was the winner of the Trick,
+        and tell the Deal to start a new Trick (if necessary).
+        """
+        self.has_ended = True
+        self.deal.new_trick()
