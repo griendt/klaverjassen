@@ -495,15 +495,11 @@ class TrickTestCase(unittest.TestCase):
         trick.play(Card(suit=Suit.DIAMONDS, rank=Rank.TEN))
         trick.play(Card(suit=Suit.SPADES, rank=Rank.QUEEN))
 
-        self.assertEqual(
-            {Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards
-        )
+        self.assertEqual({Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards)
 
         # No matter whether this game is Rotterdam or Amsterdam style, the trump is the only legitimate option.
         deal.rules = RuleSet.AMSTERDAM
-        self.assertEqual(
-            {Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards
-        )
+        self.assertEqual({Card(suit=Suit.SPADES, rank=Rank.JACK),}, trick.legal_cards)
 
 
 if __name__ == "__main__":

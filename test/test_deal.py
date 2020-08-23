@@ -25,6 +25,7 @@ class RoundTestCase(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: Deal(players=players, bidder_index=4))
 
         # Invalid suits are not allowed.
+        # noinspection PyTypeChecker
         self.assertRaises(AssertionError, lambda: Deal(players=players, bidder_index=0, trump_suit=-1))  # type: ignore
 
     def test_a_round_can_be_initialized_with_preset_trump_suit(self) -> None:

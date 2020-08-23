@@ -110,9 +110,9 @@ class Player(object):
 
         suffices = ["d", "h", "l", "n", "s"]
 
-        # The core of the name is a randoma mount of consonant+vowel combinations.
+        # The core of the name is a random amount of consonant+vowel combinations.
         syllables = random.randint(2, 3)
-        name = "".join([random.choice(consonants) + random.choice(vowels) for syllable in range(syllables)])
+        name = "".join([random.choice(consonants) + random.choice(vowels) for _ in range(syllables)])
 
         # Add a prefix in the form of an extra vowel with a certain chance
         if random.randint(0, 1):
